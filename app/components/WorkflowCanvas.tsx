@@ -133,7 +133,7 @@ function InnerWorkflowCanvas() {
                 </span>
 
                 {item.badge && (
-                  <span className="rounded-full bg-zinc-200 px-1.5 py-0.5 text-[9px] text-zinc-900">
+                  <span className="rounded-full bg-white px-1.5 py-0.5 text-[9px] text-zinc-900">
                     {item.badge}
                   </span>
                 )}
