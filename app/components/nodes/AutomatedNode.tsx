@@ -18,24 +18,38 @@ export function AutomatedNode({ data }: Props) {
       }`}
     >
       <div className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-purple-700">
-        <span className="flex h-4 w-4 items-center justify-center rounded-md bg-purple-100 text-[10px] text-purple-700">
+        <span className="flex h-4 w-4 items-center justify-center rounded-md bg-purple-100 text-[12px] text-purple-700">
           ⚙
         </span>
         <span>Automated</span>
       </div>
+
       <div className="text-sm font-medium text-purple-900">{data.title}</div>
+
       {data.actionId && (
-        <div className="mt-1 text-xs text-purple-800">Action: {data.actionId}</div>
+        <div className="mt-1 text-xs text-purple-800">
+          Action: {data.actionId}
+        </div>
       )}
+
       {hasIssues && (
         <div className="mt-1 text-[10px] text-rose-700">
           {data.validationIssues?.[0]}
         </div>
       )}
-      <Handle type="target" position={Position.Left} className="w-2 h-2 bg-purple-500" />
-      <Handle type="source" position={Position.Right} className="w-2 h-2 bg-purple-500" />
+
+      <Handle
+
+        type="target"
+        position={Position.Left}
+        className="w-3 h-3 bg-purple-500 border-2 border-white"
+      />
+      
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="w-3 h-3 bg-purple-500 border-2 border-white"
+      />
     </div>
   );
 }
-
-

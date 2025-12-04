@@ -10,6 +10,7 @@ import {
   OnConnect,
   useEdgesState,
   useNodesState,
+  MarkerType,
 } from "reactflow";
 
 import {
@@ -78,9 +79,46 @@ export function useWorkflow() {
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
-      setEdges((eds) => addEdge({ ...connection, type: "smoothstep" }, eds));
+      const sourceNode = nodes.find((n) => n.id === connection.source);
+      let edgeColor = "#71717a";
+
+      if (sourceNode) {
+        switch (sourceNode.data.type) {
+          case "start":
+            edgeColor = "#10b981"; // emerald-500
+            break;
+          case "task":
+            edgeColor = "#0ea5e9"; // sky-500
+            break;
+          case "approval":
+            edgeColor = "#f59e0b"; // amber-500
+            break;
+          case "automated":
+            edgeColor = "#a855f7"; // purple-500
+            break;
+          default:
+            edgeColor = "#71717a"; // zinc-500
+        }
+      }
+
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...connection,
+            type: "smoothstep",
+            style: { stroke: edgeColor, strokeWidth: 3 },
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+              color: edgeColor,
+              width: 9,
+              height: 9,
+            },
+          },
+          eds
+        )
+      );
     },
-    [setEdges]
+    [setEdges, nodes]
   );
 
   const addTaskNode = useCallback(() => {
@@ -151,8 +189,9 @@ export function useWorkflow() {
     (snapshot: WorkflowSnapshot) => {
       pushHistory();
       const laidOutNodes = computeAutoLayout(snapshot.nodes, snapshot.edges);
+      const styledEdges = applyEdgeStyles(snapshot.edges, laidOutNodes);
       setNodes(laidOutNodes);
-      setEdges(snapshot.edges);
+      setEdges(styledEdges);
       setSelectedNodeId(null);
     },
     [pushHistory, setEdges, setNodes]
@@ -280,6 +319,47 @@ export function useWorkflow() {
     canUndo,
     canRedo,
   };
+}
+
+function applyEdgeStyles(
+  edges: WorkflowEdge[],
+  nodes: WorkflowNode[]
+): WorkflowEdge[] {
+  return edges.map((edge) => {
+    const sourceNode = nodes.find((n) => n.id === edge.source);
+    let edgeColor = "#71717a"; 
+
+    if (sourceNode) {
+      switch (sourceNode.data.type) {
+        case "start":
+          edgeColor = "#10b981"; // emerald-500
+          break;
+        case "task":
+          edgeColor = "#0ea5e9"; // sky-500
+          break;
+        case "approval":
+          edgeColor = "#f59e0b"; // amber-500
+          break;
+        case "automated":
+          edgeColor = "#a855f7"; // purple-500
+          break;
+        default:
+          edgeColor = "#71717a"; // zinc-500
+      }
+    }
+
+    return {
+      ...edge,
+      type: "smoothstep",
+      style: { stroke: edgeColor, strokeWidth: 3 },
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: edgeColor,
+        width: 9,
+        height: 9,
+      },
+    };
+  });
 }
 
 function computeAutoLayout(

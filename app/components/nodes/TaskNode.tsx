@@ -23,19 +23,31 @@ export function TaskNode({ data }: Props) {
         </span>
         <span>Task</span>
       </div>
+
       <div className="text-sm font-medium text-sky-900">{data.title}</div>
       {data.assignee && (
-        <div className="mt-1 text-xs text-sky-800">Assignee: {data.assignee}</div>
+        <div className="mt-1 text-xs text-sky-800">
+          Assignee: {data.assignee}
+        </div>
       )}
+
       {hasIssues && (
         <div className="mt-1 text-[10px] text-rose-700">
           {data.validationIssues?.[0]}
         </div>
       )}
-      <Handle type="target" position={Position.Left} className="w-2 h-2 bg-sky-500" />
-      <Handle type="source" position={Position.Right} className="w-2 h-2 bg-sky-500" />
+
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="w-3 h-3 bg-sky-500 border-2 border-white"
+      />
+      
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="w-3 h-3 bg-sky-500 border-2 border-white"
+      />
     </div>
   );
 }
-
-

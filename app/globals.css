@@ -36,12 +36,74 @@ body {
 }
 
 ::-webkit-scrollbar {
-	width: 5px;
-	height: 5px;
-	background-color: #81a7cdc2;
+  width: 5px;
+  height: 5px;
+  background-color: #81a7cdc2;
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: #3a3a3a;
-	border-radius: 15px;
+  background-color: #3a3a3a;
+  border-radius: 15px;
+}
+
+.react-flow__edge-path {
+  stroke-dasharray: 5, 5;
+  animation: dashdraw 0.5s linear infinite;
+}
+
+@keyframes dashdraw {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+.react-flow__edge {
+  transition: all 0.2s ease;
+}
+
+.react-flow__edge:hover {
+  filter: brightness(1.2);
+}
+
+.react-flow__edge.selected {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.react-flow__handle {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.2s ease !important;
+  cursor: crosshair !important;
+  border: 2px solid white !important;
+}
+
+.react-flow__handle:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+.react-flow__handle-connecting {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5) !important;
+  border: 3px solid white !important;
+}
+
+.react-flow__node-start .react-flow__handle {
+  background-color: #10b981 !important;
+}
+
+.react-flow__node-task .react-flow__handle {
+  background-color: #0ea5e9 !important;
+}
+
+.react-flow__node-approval .react-flow__handle {
+  background-color: #f59e0b !important;
+}
+
+.react-flow__node-automated .react-flow__handle {
+  background-color: #a855f7 !important;
+}
+
+.react-flow__node-end .react-flow__handle {
+  background-color: #71717a !important;
 }
