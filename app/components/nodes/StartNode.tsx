@@ -23,15 +23,20 @@ export function StartNode({ data }: Props) {
         </span>
         <span>Start</span>
       </div>
+
       <div className="text-sm font-medium text-emerald-900">{data.title}</div>
+
       {hasIssues && (
         <div className="mt-1 text-[10px] text-rose-700">
           {data.validationIssues?.[0]}
         </div>
       )}
-      <Handle type="source" position={Position.Right} className="w-2 h-2 bg-emerald-500" />
+
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="w-2 h-2 bg-emerald-500"
+      />
     </div>
   );
 }
-
-

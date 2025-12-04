@@ -2,8 +2,12 @@
 
 import { useRef, useState } from "react";
 import { Edge, Node } from "reactflow";
+import { toast } from "sonner";
+
 import { SimulationResult } from "../types/workflow";
 import { simulateWorkflow } from "../api/mockClient";
+
+import { FaCaretDown } from "react-icons/fa";
 
 interface Props {
   nodes: Node[];
@@ -14,7 +18,7 @@ interface Props {
 export function SandboxPanel({ nodes, edges, onImport }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SimulationResult | null>(null);
-   const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleRun = async () => {
@@ -42,10 +46,10 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
             edges,
           },
           null,
-          2,
+          2
         ),
       ],
-      { type: "application/json" },
+      { type: "application/json" }
     );
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -60,7 +64,7 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
   };
 
   const handleImportChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -75,7 +79,9 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
         setError(null);
         setResult(null);
       } else {
-        setError("Invalid workflow file. Expected JSON with `nodes` and `edges` arrays.");
+        setError(
+          "Invalid workflow file. Expected JSON with `nodes` and `edges` arrays."
+        );
       }
     } catch {
       setError("Could not read workflow file. Please check the JSON format.");
@@ -86,7 +92,7 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
 
   return (
     <div className="flex h-full flex-col rounded-xl border border-zinc-200 bg-zinc-50 p-3">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-col gap-2">
         <div>
           <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-700">
             Workflow Sandbox
@@ -95,10 +101,11 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
             Simulate, export, and import workflows for quick testing.
           </p>
         </div>
-        <div className="flex items-center gap-1">
+
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50"
+            className="rounded-md border cursor-pointer border-zinc-300 bg-white px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50"
             onClick={handleExport}
             disabled={nodes.length === 0}
           >
@@ -106,14 +113,14 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
           </button>
           <button
             type="button"
-            className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50"
+            className="rounded-md border cursor-pointer border-zinc-300 bg-white px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50"
             onClick={handleImportClick}
           >
             Import
           </button>
           <button
             type="button"
-            className="rounded-md bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-800 disabled:opacity-60"
+            className="rounded-md cursor-pointer bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-800 disabled:opacity-60"
             onClick={handleRun}
             disabled={loading || nodes.length === 0}
           >
@@ -121,6 +128,7 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
           </button>
         </div>
       </div>
+
       <input
         ref={fileInputRef}
         type="file"
@@ -128,11 +136,13 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
         className="hidden"
         onChange={handleImportChange}
       />
+
       {error && (
         <div className="mt-3 rounded-md border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
           {error}
         </div>
       )}
+
       <div className="mt-3 flex-1 overflow-auto rounded-md bg-white p-2 text-xs">
         {!result && (
           <p className="text-zinc-500">
@@ -141,6 +151,7 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
             step-by-step log.
           </p>
         )}
+
         {result && (
           <div className="space-y-3">
             <div>
@@ -156,6 +167,7 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
                     : "Workflow has validation issues"}
                 </span>
               </div>
+
               {result.issues.length > 0 && (
                 <ul className="mt-1 list-disc pl-5 text-[11px] text-amber-700">
                   {result.issues.map((issue, index) => (
@@ -164,18 +176,20 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
                 </ul>
               )}
             </div>
+
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wide text-zinc-600">
                 Execution Trace
               </div>
+
               <ol className="mt-1 space-y-1">
-                {result.steps.map((step, index) => (
+                {result?.steps?.map((step, index) => (
                   <li
                     key={step.id}
                     className="flex items-start gap-2 rounded-md border border-zinc-100 bg-zinc-50 px-2 py-1"
                   >
                     <span className="mt-[3px] text-[10px] text-zinc-400">
-                      {index + 1}
+                      {index + 1}.
                     </span>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
@@ -197,10 +211,29 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
           </div>
         )}
       </div>
+
       <details className="mt-2 rounded-md border border-dashed border-zinc-200 bg-white p-2 text-[11px] text-zinc-500">
-        <summary className="cursor-pointer text-[11px] font-medium text-zinc-700">
-          View workflow JSON
+        <summary className="flex cursor-pointer items-center justify-between text-[11px] font-medium text-zinc-700">
+          <span className="inline-flex items-center gap-0.5">
+            <FaCaretDown className="h-3 w-3" />
+            View workflow JSON
+          </span>
+          <button
+            title="Copy workflow"
+            type="button"
+            className="rounded border cursor-pointer border-zinc-300 bg-white px-2 py-0.5 text-[10px] hover:bg-zinc-50"
+            onClick={(e) => {
+              e.preventDefault();
+              toast.success("Workflow JSON copied to clipboard");
+              navigator.clipboard.writeText(
+                JSON.stringify({ nodes, edges }, null, 2)
+              );
+            }}
+          >
+            Copy
+          </button>
         </summary>
+
         <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all text-[10px]">
           {JSON.stringify(
             {
@@ -208,12 +241,10 @@ export function SandboxPanel({ nodes, edges, onImport }: Props) {
               edges,
             },
             null,
-            2,
+            2
           )}
         </pre>
       </details>
     </div>
   );
 }
-
-

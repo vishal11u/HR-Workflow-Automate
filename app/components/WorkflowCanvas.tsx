@@ -11,6 +11,7 @@ import ReactFlow, {
   useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
+
 import { useWorkflow } from "../hooks/useWorkflow";
 import { NodeFormsPanel } from "./NodeForms";
 import { SandboxPanel } from "./SandboxPanel";
@@ -19,6 +20,15 @@ import { TaskNode } from "./nodes/TaskNode";
 import { ApprovalNode } from "./nodes/ApprovalNode";
 import { AutomatedNode } from "./nodes/AutomatedNode";
 import { EndNode } from "./nodes/EndNode";
+
+import {
+  RiDashboardLine,
+  RiCheckboxCircleLine,
+  RiTimerLine,
+  RiLinksLine,
+  RiFoldersLine,
+  RiPlayMiniLine,
+} from "react-icons/ri";
 
 const nodeTypes: NodeTypes = {
   start: StartNode,
@@ -34,76 +44,104 @@ function InnerWorkflowCanvas() {
 
   const selectedNode: Node | null = useMemo(
     () => workflow.nodes.find((n) => n.id === workflow.selectedNodeId) ?? null,
-    [workflow.nodes, workflow.selectedNodeId],
+    [workflow.nodes, workflow.selectedNodeId]
   );
 
   return (
-    <div className="flex h-[calc(100vh-88px)] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-      {/* Primary left navigation, similar to reference UI */}
+    <div className="flex h-[calc(100vh)] overflow-hidden rounded-2l border border-zinc-200 bg-white shadow-sm">
+      {/* Primary left navigation*/}
       <aside className="flex w-52 flex-col border-r border-zinc-200 bg-zinc-50/80 px-3 py-4">
-        <div className="mb-4 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+        <div className="mb-1.5 pb-1.5 text-[11px] border-b border-zinc-200 font-semibold uppercase tracking-wide text-zinc-500">
           General
         </div>
-        <nav className="space-y-1 text-xs">
-          <button className="flex w-full items-center justify-between px-2 py-1.5 text-left text-zinc-600 hover:bg-zinc-100">
-            <span className="inline-flex items-center gap-2">
-              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-zinc-800">
-                <span className="h-2 w-2 rounded-sm bg-white" />
-              </span>
-              <span>Dashboard</span>
-            </span>
-            
-          </button>
-          <button className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-zinc-600 hover:bg-zinc-100">
-            <span className="inline-flex items-center gap-2">
-              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-zinc-100 text-[10px]">
-                ✓
-              </span>
-              <span>Compliance</span>
-            </span>
-          </button>
-          <button className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-zinc-600 hover:bg-zinc-100">
-            <span className="inline-flex items-center gap-2">
-              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-zinc-100 text-[10px]">
-                ⏱
-              </span>
-              <span>Scheduler</span>
-            </span>
-          </button>
 
+        <nav className="space-y-1 text-xs">
+          {[
+            { name: "Dashboard", icon: RiDashboardLine },
+            { name: "Compliance", icon: RiCheckboxCircleLine },
+            { name: "Scheduler", icon: RiTimerLine },
+          ].map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <button
+                key={item.name}
+                className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-zinc-600 hover:bg-zinc-100"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <span className="flex h-4 w-4 items-center justify-center rounded-md bg-zinc-100 text-zinc-600">
+                    <Icon className="h-3 w-3" />
+                  </span>
+                  <span>{item.name}</span>
+                </span>
+              </button>
+            );
+          })}
         </nav>
-        <div className="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+
+        <div className="mt-6 mb-1.5 pb-1.5 border-b border-zinc-200 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
           Automation
         </div>
+
         <nav className="space-y-1 text-xs">
-          <button className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-zinc-600 hover:bg-zinc-100">
-            <span className="inline-flex items-center gap-2">
-              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-zinc-100 text-[10px]">
-                🔗
-              </span>
-              <span>Integrations</span>
-            </span>
-          </button>
-          <button className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-zinc-600 hover:bg-zinc-100">
-            <span className="inline-flex items-center gap-2">
-              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-zinc-100 text-[10px]">
-                ⧉
-              </span>
-              <span>Repository</span>
-            </span>
-          </button>
-          <button className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-zinc-100 bg-zinc-900">
-            <span className="inline-flex items-center gap-2">
-              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-emerald-100 text-[10px] text-emerald-700">
-                ▶
-              </span>
-              <span>Workflows</span>
-            </span>
-            <span className="rounded-full bg-zinc-200 px-1.5 py-0.5 text-[9px] text-zinc-900">
-              HR
-            </span>
-          </button>
+          {[
+            {
+              name: "Integrations",
+              icon: RiLinksLine,
+              active: false,
+            },
+            {
+              name: "Repository",
+              icon: RiFoldersLine,
+              active: false,
+            },
+            {
+              name: "Workflows",
+              icon: RiPlayMiniLine,
+              active: true,
+              badge: "HR",
+            },
+          ].map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <button
+                key={item.name}
+                className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left
+              ${
+                item.active
+                  ? "bg-zinc-800 text-zinc-100"
+                  : "text-zinc-600 hover:bg-zinc-100"
+              }
+            `}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <span
+                    className={`
+                  flex h-4 w-4 items-center justify-center rounded-md 
+                  ${
+                    item.active
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-zinc-100 text-zinc-600"
+                  }
+                `}
+                  >
+                    <Icon className="h-3 w-3" />
+                  </span>
+
+                  <span>{item.name}</span>
+                </span>
+
+                {item.badge && (
+                  <span className="rounded-full bg-zinc-200 px-1.5 py-0.5 text-[9px] text-zinc-900">
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </nav>
+
         <div className="mt-auto space-y-2 text-[11px] text-zinc-500">
           <p className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-2 py-1.5">
             Tip: Click a node to edit details on the right. Use edges to define
@@ -114,7 +152,6 @@ function InnerWorkflowCanvas() {
 
       {/* Center canvas + palette header */}
       <section className="flex min-w-0 flex-1 flex-col border-r border-zinc-200 ">
-        {/* Canvas header with breadcrumb and quick palette */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-4 py-3">
           <div className="min-w-[200px]">
             <div className="text-[11px] uppercase tracking-wide text-zinc-400">
@@ -124,10 +161,11 @@ function InnerWorkflowCanvas() {
               New Hire Onboarding
             </div>
           </div>
+
           <div className="flex flex-wrap items-center gap-2 text-[11px]">
             <button
               type="button"
-              className="rounded-full border border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-50"
+              className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
               onClick={workflow.undo}
               disabled={!workflow.canUndo}
             >
@@ -135,7 +173,7 @@ function InnerWorkflowCanvas() {
             </button>
             <button
               type="button"
-              className="rounded-full border border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-50"
+              className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
               onClick={workflow.redo}
               disabled={!workflow.canRedo}
             >
@@ -143,14 +181,14 @@ function InnerWorkflowCanvas() {
             </button>
             <button
               type="button"
-              className="rounded-full border border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-50"
+              className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
               onClick={workflow.autoLayout}
             >
               Auto layout
             </button>
             <button
               type="button"
-              className="rounded-full bg-emerald-500 px-3 py-1 font-medium text-white shadow-sm hover:bg-emerald-600"
+              className="rounded-full cursor-pointer bg-zinc-800 px-3 py-1 font-medium text-white shadow-sm hover:bg-zinc-600"
             >
               Publish
             </button>
@@ -159,7 +197,8 @@ function InnerWorkflowCanvas() {
 
         {/* Mini palette row, similar to chips in the reference */}
         <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 bg-zinc-50/80 px-4 py-2 text-[11px]">
-          <span className="mr-1 text-zinc-400">Nodes</span>
+          <span className="mr-0 text-zinc-400 font-medium">Nodes :</span>
+
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-800 hover:bg-sky-100"
@@ -173,6 +212,7 @@ function InnerWorkflowCanvas() {
             <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
             Task
           </button>
+
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-amber-800 hover:bg-amber-100"
@@ -186,6 +226,7 @@ function InnerWorkflowCanvas() {
             <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
             Approval
           </button>
+
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-purple-800 hover:bg-purple-100"
@@ -216,7 +257,9 @@ function InnerWorkflowCanvas() {
               | "automated"
               | "";
             if (!type) return;
-            const bounds = (event.currentTarget as HTMLDivElement).getBoundingClientRect();
+            const bounds = (
+              event.currentTarget as HTMLDivElement
+            ).getBoundingClientRect();
             const position = reactFlow.project({
               x: event.clientX - bounds.left,
               y: event.clientY - bounds.top,
@@ -238,9 +281,9 @@ function InnerWorkflowCanvas() {
             <MiniMap
               pannable
               zoomable
-              className="!bg-white/80 !shadow-sm !rounded-lg"
+              className="bg-white/80! shadow-sm! rounded-lg!"
             />
-            <Controls className="!bg-white/90 !shadow-sm !rounded-lg" />
+            <Controls className="bg-white/90! shadow-sm! rounded-lg!" />
           </ReactFlow>
         </div>
       </section>
@@ -257,19 +300,20 @@ function InnerWorkflowCanvas() {
         </div>
 
         <div className="flex-1 space-y-3 overflow-auto px-3 py-3">
-          {workflow.selectedNodeId && (
+          {workflow?.selectedNodeId && (
             <div className="flex items-center justify-between rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-[11px] text-rose-700">
-              <span>Selected node: {workflow.selectedNodeId}</span>
+              <span>Selected node: {workflow?.selectedNodeId}</span>
               <button
                 type="button"
-                className="rounded-full border border-rose-200 bg-white px-2 py-0.5 text-[11px] font-medium text-rose-700 hover:bg-rose-100"
-                onClick={workflow.deleteSelected}
+                className="rounded-full border cursor-pointer border-rose-200 bg-white px-2 py-0.5 text-[11px] font-medium text-rose-700 hover:bg-rose-100"
+                onClick={workflow?.deleteSelected}
               >
                 Delete node
               </button>
             </div>
           )}
-          <div className="h-[360px] rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
+
+          <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
             <div className="h-full overflow-auto pr-1">
               <NodeFormsPanel
                 node={selectedNode?.data ?? null}
@@ -280,7 +324,8 @@ function InnerWorkflowCanvas() {
               />
             </div>
           </div>
-          <div className="h-[360px]">
+
+          <div className="">
             <SandboxPanel
               nodes={workflow.nodes}
               edges={workflow.edges}
@@ -300,5 +345,3 @@ export function WorkflowCanvas() {
     </ReactFlowProvider>
   );
 }
-
-

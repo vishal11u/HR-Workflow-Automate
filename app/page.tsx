@@ -3,7 +3,7 @@ import { WorkflowCanvas } from "./components/WorkflowCanvas";
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50">
-      <header className="flex items-center justify-between border-b border-zinc-200 bg-white px-8 py-4">
+      {/* <header className="flex items-center justify-between border-b border-zinc-200 bg-white px-8 py-4">
         <div>
           <h1 className="text-sm font-semibold text-zinc-900">
             HR Workflow Designer
@@ -19,9 +19,9 @@ export default function Home() {
           </span>
           <span>React + React Flow</span>
         </div>
-      </header>
-      
-      <main className="flex-1 px-6 py-4 dot-grid-bg">
+      </header> */}
+
+      <main className="flex-1 ">
         <WorkflowCanvas />
       </main>
     </div>

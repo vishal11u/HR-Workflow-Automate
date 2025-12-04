@@ -24,16 +24,24 @@ export function ApprovalNode({ data }: Props) {
         <span>Approval</span>
       </div>
       <div className="text-sm font-medium text-amber-900">{data.title}</div>
-      <div className="mt-1 text-xs text-amber-800">Role: {data.approverRole}</div>
+      <div className="mt-1 text-xs text-amber-800">
+        Role: {data.approverRole}
+      </div>
       {hasIssues && (
         <div className="mt-1 text-[10px] text-rose-700">
           {data.validationIssues?.[0]}
         </div>
       )}
-      <Handle type="target" position={Position.Left} className="w-2 h-2 bg-amber-500" />
-      <Handle type="source" position={Position.Right} className="w-2 h-2 bg-amber-500" />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="w-2 h-2 bg-amber-500"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="w-2 h-2 bg-amber-500"
+      />
     </div>
   );
 }
-
-

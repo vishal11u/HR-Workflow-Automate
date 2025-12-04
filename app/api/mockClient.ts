@@ -1,7 +1,10 @@
-import { AutomationAction, SimulationRequest, SimulationResult } from "../types/workflow";
+import {
+  AutomationAction,
+  SimulationRequest,
+  SimulationResult,
+} from "../types/workflow";
 
 // In-memory mock API layer to keep things simple and self-contained.
-
 const mockAutomations: AutomationAction[] = [
   { id: "send_email", label: "Send Email", params: ["to", "subject"] },
   {
@@ -33,7 +36,7 @@ export async function fetchAutomations(): Promise<AutomationAction[]> {
 }
 
 export async function simulateWorkflow(
-  payload: SimulationRequest,
+  payload: SimulationRequest
 ): Promise<SimulationResult> {
   await new Promise((resolve) => setTimeout(resolve, 400));
 
@@ -66,5 +69,3 @@ export async function simulateWorkflow(
     steps,
   };
 }
-
-

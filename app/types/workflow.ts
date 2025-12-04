@@ -1,9 +1,4 @@
-export type NodeType =
-  | "start"
-  | "task"
-  | "approval"
-  | "automated"
-  | "end";
+export type NodeType = "start" | "task" | "approval" | "automated" | "end";
 
 export interface BaseNodeData {
   id: string;
@@ -66,11 +61,7 @@ export type WorkflowNodeData =
   | EndNodeData;
 
 export interface SimulationRequest {
-  // Using unknown here because the simulation layer treats nodes/edges as opaque graph
-  // structures coming from React Flow.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   nodes: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   edges: any[];
 }
 
@@ -87,5 +78,3 @@ export interface SimulationResult {
   issues: string[];
   steps: SimulationStep[];
 }
-
-
