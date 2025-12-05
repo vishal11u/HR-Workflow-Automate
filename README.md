@@ -1,6 +1,6 @@
 ## HR Workflow Designer Prototype
 
-![HR Workflow]([./assets/screens/Screenshot%202024-10-15%20200500.png](https://ikvwvnmsofbhmcowcsti.supabase.co/storage/v1/object/public/avatars/WhatsApp%20Image%202025-12-05%20at%203.20.14%20PM.jpeg))
+![HR Workflow](https://ikvwvnmsofbhmcowcsti.supabase.co/storage/v1/object/public/avatars/WhatsApp%20Image%202025-12-05%20at%203.20.14%20PM.jpeg)
 
 This repository contains a small **HR Workflow Designer** prototype built with **Next.js (App Router)**, **React**, and **React Flow**.  
 It lets an HR admin visually model workflows (onboarding, approvals, automated steps), configure node details, and run a mock simulation.
