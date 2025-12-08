@@ -20,6 +20,7 @@ import { TaskNode } from "./nodes/TaskNode";
 import { ApprovalNode } from "./nodes/ApprovalNode";
 import { AutomatedNode } from "./nodes/AutomatedNode";
 import { EndNode } from "./nodes/EndNode";
+import { WorkflowHeader } from "@/components/workflows/WorkflowHeader";
 
 import {
   RiDashboardLine,
@@ -38,7 +39,7 @@ const nodeTypes: NodeTypes = {
   end: EndNode,
 };
 
-function InnerWorkflowCanvas() {
+function InnerWorkflowCanvas({ workflowId }: { workflowId?: string }) {
   const workflow = useWorkflow();
   const reactFlow = useReactFlow();
 
@@ -57,15 +58,14 @@ function InnerWorkflowCanvas() {
 
         <nav className="space-y-1 text-xs">
           {[
-            { name: "Dashboard", icon: RiDashboardLine },
-            { name: "Compliance", icon: RiCheckboxCircleLine },
-            { name: "Scheduler", icon: RiTimerLine },
+            { name: "Dashboard", icon: RiDashboardLine, href: "/dashboard" },
+            { name: "Scheduler", icon: RiTimerLine, href: "/scheduler" },
           ].map((item) => {
             const Icon = item.icon;
-
             return (
-              <button
+              <a
                 key={item.name}
+                href={item.href}
                 className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-zinc-600 hover:bg-zinc-100"
               >
                 <span className="inline-flex items-center gap-2">
@@ -74,7 +74,7 @@ function InnerWorkflowCanvas() {
                   </span>
                   <span>{item.name}</span>
                 </span>
-              </button>
+              </a>
             );
           })}
         </nav>
@@ -86,27 +86,18 @@ function InnerWorkflowCanvas() {
         <nav className="space-y-1 text-xs">
           {[
             {
-              name: "Integrations",
-              icon: RiLinksLine,
-              active: false,
-            },
-            {
-              name: "Repository",
-              icon: RiFoldersLine,
-              active: false,
-            },
-            {
               name: "Workflows",
               icon: RiPlayMiniLine,
               active: true,
               badge: "HR",
+              href: "/",
             },
           ].map((item) => {
             const Icon = item.icon;
-
             return (
-              <button
+              <a
                 key={item.name}
+                href={item.href}
                 className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left
               ${
                 item.active
@@ -137,7 +128,7 @@ function InnerWorkflowCanvas() {
                     {item.badge}
                   </span>
                 )}
-              </button>
+              </a>
             );
           })}
         </nav>
@@ -152,48 +143,52 @@ function InnerWorkflowCanvas() {
 
       {/* Center canvas + palette header */}
       <section className="flex min-w-0 flex-1 flex-col border-r border-zinc-200 ">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-4 py-3">
-          <div className="min-w-[200px]">
-            <div className="text-[11px] uppercase tracking-wide text-zinc-400">
-              User Automation
+        {workflowId ? (
+          <WorkflowHeader workflowId={workflowId} workflow={workflow} />
+        ) : (
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-4 py-3">
+            <div className="min-w-[200px]">
+              <div className="text-[11px] uppercase tracking-wide text-zinc-400">
+                User Automation
+              </div>
+              <div className="text-sm font-medium text-zinc-900">
+                New Hire Onboarding
+              </div>
             </div>
-            <div className="text-sm font-medium text-zinc-900">
-              New Hire Onboarding
-            </div>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-2 text-[11px]">
-            <button
-              type="button"
-              className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
-              onClick={workflow.undo}
-              disabled={!workflow.canUndo}
-            >
-              Undo
-            </button>
-            <button
-              type="button"
-              className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
-              onClick={workflow.redo}
-              disabled={!workflow.canRedo}
-            >
-              Redo
-            </button>
-            <button
-              type="button"
-              className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
-              onClick={workflow.autoLayout}
-            >
-              Auto layout
-            </button>
-            <button
-              type="button"
-              className="rounded-full cursor-pointer bg-zinc-800 px-3 py-1 font-medium text-white shadow-sm hover:bg-zinc-600"
-            >
-              Publish
-            </button>
+            <div className="flex flex-wrap items-center gap-2 text-[11px]">
+              <button
+                type="button"
+                className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
+                onClick={workflow.undo}
+                disabled={!workflow.canUndo}
+              >
+                Undo
+              </button>
+              <button
+                type="button"
+                className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
+                onClick={workflow.redo}
+                disabled={!workflow.canRedo}
+              >
+                Redo
+              </button>
+              <button
+                type="button"
+                className="rounded-full border cursor-pointer border-zinc-200 px-2.5 py-1 text-zinc-700 hover:bg-zinc-100"
+                onClick={workflow.autoLayout}
+              >
+                Auto layout
+              </button>
+              <button
+                type="button"
+                className="rounded-full cursor-pointer bg-zinc-800 px-3 py-1 font-medium text-white shadow-sm hover:bg-zinc-600"
+              >
+                Publish
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Mini palette row, similar to chips in the reference */}
         <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 bg-zinc-50/80 px-4 py-2 text-[11px]">
@@ -338,10 +333,10 @@ function InnerWorkflowCanvas() {
   );
 }
 
-export function WorkflowCanvas() {
+export function WorkflowCanvas({ workflowId }: { workflowId?: string }) {
   return (
     <ReactFlowProvider>
-      <InnerWorkflowCanvas />
+      <InnerWorkflowCanvas workflowId={workflowId} />
     </ReactFlowProvider>
   );
 }

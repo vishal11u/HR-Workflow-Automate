@@ -1,12 +1,19 @@
 "use client";
 
+import { use } from "react";
+import { WorkflowCanvas } from "@/app/components/WorkflowCanvas";
+// import { WorkflowHeader } from "@/components/workflows/WorkflowHeader";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import { AuthPage } from "@/components/auth/AuthPage";
-import { WorkflowList } from "@/components/workflows/WorkflowList";
 import { RiLoader4Line } from "react-icons/ri";
 
-export default function Home() {
+export default function WorkflowEditorPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { user, loading } = useAuth();
+  const { id } = use(params);
 
   if (loading) {
     return (
@@ -23,5 +30,11 @@ export default function Home() {
     return <AuthPage />;
   }
 
-  return <WorkflowList />;
+  return (
+    <div className="flex min-h-screen flex-col bg-zinc-50">
+      <main className="flex-1">
+        <WorkflowCanvas workflowId={id} />
+      </main>
+    </div>
+  );
 }

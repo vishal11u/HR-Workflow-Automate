@@ -5,7 +5,7 @@ import { AuthPage } from "@/components/auth/AuthPage";
 import { WorkflowList } from "@/components/workflows/WorkflowList";
 import { RiLoader4Line } from "react-icons/ri";
 
-export default function Home() {
+export default function WorkflowsPage() {
   const { user, loading } = useAuth();
 
   if (loading) {

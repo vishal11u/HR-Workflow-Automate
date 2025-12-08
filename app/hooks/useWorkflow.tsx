@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   XYPosition,
   addEdge,
@@ -35,8 +35,11 @@ export function useWorkflow() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [past, setPast] = useState<WorkflowSnapshot[]>([]);
   const [future, setFuture] = useState<WorkflowSnapshot[]>([]);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) return;
+
     const initialStart: WorkflowNode = {
       id: "start-1",
       position: { x: 100, y: 100 },
@@ -64,7 +67,8 @@ export function useWorkflow() {
     };
 
     setNodes([initialStart, initialEnd]);
-  }, [setNodes]);
+    setHasInitialized(true);
+  }, [hasInitialized, setNodes]);
 
   const pushHistory = useCallback(() => {
     setPast((prev) => [
@@ -231,74 +235,105 @@ export function useWorkflow() {
   const canUndo = past.length > 0;
   const canRedo = future.length > 0;
 
-  const { validatedNodes, issues } = useMemo(() => {
-    const nextIssues: string[] = [];
-    const nextNodes = nodes.map((n) => ({
-      ...n,
-      data: { ...n.data, validationIssues: [] },
-    }));
+  const [issues, setIssues] = useState<string[]>([]);
 
-    const startNodes = nextNodes.filter((n) => n.data.type === "start");
-    const endNodes = nextNodes.filter((n) => n.data.type === "end");
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const nextIssues: string[] = [];
+      const nodeIssuesMap = new Map<string, string[]>();
 
-    if (startNodes.length === 0) {
-      nextIssues.push("Workflow must contain a Start node.");
-    }
-    if (startNodes.length > 1) {
-      nextIssues.push("Workflow has multiple Start nodes.");
-      startNodes.forEach((n) => {
-        ((n.data as any).validationIssues ??= []).push("Multiple Start nodes.");
-      });
-    }
+      const startNodes = nodes.filter((n) => n.data.type === "start");
+      const endNodes = nodes.filter((n) => n.data.type === "end");
 
-    if (endNodes.length === 0) {
-      nextIssues.push("Workflow must contain an End node.");
-    }
-    if (endNodes.length > 1) {
-      nextIssues.push("Workflow has multiple End nodes.");
-      endNodes.forEach((n) => {
-        (n.data as any).validationIssues ??= [];
-        (n.data as any).validationIssues.push("Multiple End nodes.");
-      });
-    }
+      if (startNodes.length === 0) {
+        nextIssues.push("Workflow must contain a Start node.");
+      }
+      if (startNodes.length > 1) {
+        nextIssues.push("Workflow has multiple Start nodes.");
+        startNodes.forEach((n) => {
+          const issues = nodeIssuesMap.get(n.id) || [];
+          issues.push("Multiple Start nodes.");
+          nodeIssuesMap.set(n.id, issues);
+        });
+      }
 
-    const outgoingMap = new Map<string, number>();
-    const incomingMap = new Map<string, number>();
-    edges.forEach((e) => {
-      outgoingMap.set(e.source, (outgoingMap.get(e.source) ?? 0) + 1);
-      incomingMap.set(e.target, (incomingMap.get(e.target) ?? 0) + 1);
-      if (e.source === e.target) {
-        const node = nextNodes.find((n) => n.id === e.source);
-        if (node) {
-          ((node.data as any).validationIssues ??= []).push(
-            "Node has a self-referencing edge."
-          );
+      if (endNodes.length === 0) {
+        nextIssues.push("Workflow must contain an End node.");
+      }
+      if (endNodes.length > 1) {
+        nextIssues.push("Workflow has multiple End nodes.");
+        endNodes.forEach((n) => {
+          const issues = nodeIssuesMap.get(n.id) || [];
+          issues.push("Multiple End nodes.");
+          nodeIssuesMap.set(n.id, issues);
+        });
+      }
+
+      const outgoingMap = new Map<string, number>();
+      const incomingMap = new Map<string, number>();
+
+      edges.forEach((e) => {
+        outgoingMap.set(e.source, (outgoingMap.get(e.source) ?? 0) + 1);
+        incomingMap.set(e.target, (incomingMap.get(e.target) ?? 0) + 1);
+        if (e.source === e.target) {
+          const issues = nodeIssuesMap.get(e.source) || [];
+          issues.push("Node has a self-referencing edge.");
+          nodeIssuesMap.set(e.source, issues);
         }
-      }
-    });
+      });
 
-    nextNodes.forEach((node) => {
-      const type = node.data.type;
-      const incoming = incomingMap.get(node.id) ?? 0;
-      const outgoing = outgoingMap.get(node.id) ?? 0;
+      nodes.forEach((node) => {
+        const type = node.data.type;
+        const incoming = incomingMap.get(node.id) ?? 0;
+        const outgoing = outgoingMap.get(node.id) ?? 0;
 
-      if (type !== "start" && incoming === 0) {
-        ((node.data as any).validationIssues ??= []).push(
-          "No incoming connection."
-        );
-      }
-      if (type !== "end" && outgoing === 0) {
-        ((node.data as any).validationIssues ??= []).push(
-          "No outgoing connection."
-        );
-      }
-    });
+        if (type !== "start" && incoming === 0) {
+          const issues = nodeIssuesMap.get(node.id) || [];
+          issues.push("No incoming connection.");
+          nodeIssuesMap.set(node.id, issues);
+        }
+        if (type !== "end" && outgoing === 0) {
+          const issues = nodeIssuesMap.get(node.id) || [];
+          issues.push("No outgoing connection.");
+          nodeIssuesMap.set(node.id, issues);
+        }
+      });
 
-    return { validatedNodes: nextNodes, issues: nextIssues };
-  }, [nodes, edges]);
+      // Update global issues state
+      setIssues((prev) => {
+        if (JSON.stringify(prev) !== JSON.stringify(nextIssues)) {
+          return nextIssues;
+        }
+        return prev;
+      });
+
+      // Update nodes with validation issues if changed
+      setNodes((currentNodes) => {
+        let hasChanges = false;
+
+        const newNodes = currentNodes.map((node: any) => {
+          const newIssues = nodeIssuesMap.get(node.id) || [];
+          const currentIssues = node.data.validationIssues || [];
+
+          if (JSON.stringify(newIssues) !== JSON.stringify(currentIssues)) {
+            hasChanges = true;
+            return {
+              ...node,
+              data: { ...node.data, validationIssues: newIssues },
+            };
+          }
+          return node;
+        });
+
+        return hasChanges ? newNodes : currentNodes;
+      });
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [nodes, edges, setNodes]);
 
   return {
-    nodes: validatedNodes,
+    nodes,
     edges,
     onNodesChange,
     onEdgesChange,
@@ -327,7 +362,7 @@ function applyEdgeStyles(
 ): WorkflowEdge[] {
   return edges.map((edge) => {
     const sourceNode = nodes.find((n) => n.id === edge.source);
-    let edgeColor = "#71717a"; 
+    let edgeColor = "#71717a";
 
     if (sourceNode) {
       switch (sourceNode.data.type) {
